@@ -80,26 +80,26 @@ export default function UpcomingAudits({ audits }: UpcomingAuditsProps) {
                   className="hover:bg-slate-50/60 transition-colors duration-150 animate-fade-in"
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-3.5 min-w-[220px]">
                     <div>
-                      <p className="text-sm font-medium text-slate-800">{audit.title}</p>
+                      <p className="text-sm font-semibold text-slate-800 leading-normal">{audit.title}</p>
                       <p className="text-xs text-slate-400 mt-0.5">Clause {audit.clause_targeted}</p>
                     </div>
                   </td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-3.5 whitespace-nowrap">
                     <span className="text-sm text-slate-600">{audit.department}</span>
                   </td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-3.5 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[10px] font-bold">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                         {audit.auditor_name?.split(' ').map(n => n[0]).join('')}
                       </div>
                       <span className="text-sm text-slate-600">{audit.auditor_name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-3.5 whitespace-nowrap">
                     <div>
-                      <p className="text-sm text-slate-600">{formatDate(audit.scheduled_date)}</p>
+                      <p className="text-sm text-slate-600 font-medium">{formatDate(audit.scheduled_date)}</p>
                       {daysUntil > 0 && (
                         <p className="text-[10px] text-slate-400 mt-0.5">
                           In {daysUntil} day{daysUntil !== 1 ? 's' : ''}
@@ -107,7 +107,7 @@ export default function UpcomingAudits({ audits }: UpcomingAuditsProps) {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-3.5 whitespace-nowrap">
                     <Badge variant={statusToVariant(audit.status)} dot>
                       {audit.status}
                     </Badge>
