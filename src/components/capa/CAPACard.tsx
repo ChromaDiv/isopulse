@@ -7,8 +7,7 @@
 
 import React from 'react';
 import type { CAPAAction } from '@/lib/types';
-import Badge, { statusToVariant } from '@/components/ui/Badge';
-import { Calendar, User, FileText, ArrowRight, Clock } from 'lucide-react';
+import { Calendar, User, Clock } from 'lucide-react';
 
 interface CAPACardProps {
   capa: CAPAAction;

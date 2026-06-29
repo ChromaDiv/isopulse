@@ -5,13 +5,14 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getSubClauseById } from '@/lib/iso9001Data';
 import { upsertClauseImplementation } from '@/lib/actions/clause-actions';
 import type { ClauseImplementation } from '@/lib/types';
-import Card, { CardHeader } from '@/components/ui/Card';
+import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
+import Link from 'next/link';
 import {
   BookOpen,
   Building2,
@@ -21,6 +22,7 @@ import {
   Loader2,
   CheckCircle,
   FileCheck2,
+  ChevronDown,
 } from 'lucide-react';
 
 interface ClauseDetailPaneProps {
@@ -34,23 +36,15 @@ export default function ClauseDetailPane({
   initialImplementation,
   onSaveSuccess,
 }: ClauseDetailPaneProps) {
-  const [status, setStatus] = useState<'Not Started' | 'In Progress' | 'Fully Implemented'>('Not Started');
-  const [evidenceNotes, setEvidenceNotes] = useState('');
-  const [evidenceFileUrl, setEvidenceFileUrl] = useState('');
+  const [status, setStatus] = useState<'Not Started' | 'In Progress' | 'Fully Implemented'>(
+    initialImplementation?.status || 'Not Started'
+  );
+  const [evidenceNotes, setEvidenceNotes] = useState(initialImplementation?.evidence_notes || '');
+  const [evidenceFileUrl, setEvidenceFileUrl] = useState(initialImplementation?.evidence_file_url || '');
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Sync state with selected subclause / initialImplementation
-  useEffect(() => {
-    if (subclauseId) {
-      setStatus(initialImplementation?.status || 'Not Started');
-      setEvidenceNotes(initialImplementation?.evidence_notes || '');
-      setEvidenceFileUrl(initialImplementation?.evidence_file_url || '');
-      setSuccessMsg(null);
-      setErrorMsg(null);
-    }
-  }, [subclauseId, initialImplementation]);
+  const [showFullText, setShowFullText] = useState(false);
 
   if (!subclauseId) {
     return (
@@ -127,14 +121,46 @@ export default function ClauseDetailPane({
         </div>
 
         {/* Section: Standard Definition */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5" />
-            Standard Requirement
-          </h4>
-          <p className="text-sm text-slate-600 leading-relaxed bg-slate-50/60 p-4 rounded-xl border border-slate-100">
-            {subclause.definition}
-          </p>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              Standard Requirement
+            </h4>
+            <p className="text-sm text-slate-600 leading-relaxed bg-slate-50/60 p-4 rounded-xl border border-slate-100">
+              {subclause.definition}
+            </p>
+          </div>
+
+          {/* Verbatim Collapsible Box */}
+          <div className="border border-slate-150 rounded-xl overflow-hidden bg-slate-50/20">
+            <button
+              type="button"
+              onClick={() => setShowFullText(!showFullText)}
+              className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50/50 transition-colors cursor-pointer text-xs font-bold text-slate-700"
+            >
+              <span className="flex items-center gap-1.5">
+                Official Verbatim Standard Text
+              </span>
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showFullText ? 'rotate-180' : ''}`} />
+            </button>
+            {showFullText && (
+              <div className="px-4 pb-4 pt-1.5 border-t border-slate-100 bg-white space-y-3">
+                <p className="text-[11px] text-slate-600 leading-relaxed whitespace-pre-line font-serif antialiased">
+                  {subclause.fullRequirements}
+                </p>
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  <Link
+                    href={`/help?clause=${subclause.id}`}
+                    target="_blank"
+                    className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1"
+                  >
+                    Open in Reference Manual →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Section: Departments */}

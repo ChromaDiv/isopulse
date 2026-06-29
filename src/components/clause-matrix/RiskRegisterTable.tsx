@@ -32,8 +32,8 @@ export default function RiskRegisterTable({ risks }: RiskRegisterTableProps) {
   };
 
   const sortedRisks = [...risks].sort((a, b) => {
-    let aVal = a[sortField];
-    let bVal = b[sortField];
+    const aVal = a[sortField];
+    const bVal = b[sortField];
 
     if (aVal === undefined) return 1;
     if (bVal === undefined) return -1;
@@ -269,6 +269,7 @@ export default function RiskRegisterTable({ risks }: RiskRegisterTableProps) {
 
       {isModalOpen && (
         <RiskFormModal
+          key={selectedRisk?.id || 'new'}
           risk={selectedRisk}
           onClose={() => setIsModalOpen(false)}
         />

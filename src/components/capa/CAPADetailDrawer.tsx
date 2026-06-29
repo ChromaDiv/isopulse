@@ -5,9 +5,9 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { CAPAAction } from '@/lib/types';
-import { X, Save, AlertCircle, Trash2, ArrowRight } from 'lucide-react';
+import { X, Save, AlertCircle, Trash2 } from 'lucide-react';
 import Badge, { statusToVariant } from '@/components/ui/Badge';
 import { updateCAPA, deleteCAPA } from '@/lib/actions/capa-actions';
 import FiveWhysAnalysis from './FiveWhysAnalysis';
@@ -18,35 +18,20 @@ interface CAPADetailDrawerProps {
 }
 
 export default function CAPADetailDrawer({ capa, onClose }: CAPADetailDrawerProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [rootCause, setRootCause] = useState('');
-  const [correctiveAction, setCorrectiveAction] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [status, setStatus] = useState('');
-  const [why1, setWhy1] = useState('');
-  const [why2, setWhy2] = useState('');
-  const [why3, setWhy3] = useState('');
-  const [why4, setWhy4] = useState('');
-  const [why5, setWhy5] = useState('');
+  const [title, setTitle] = useState(capa.title || '');
+  const [description, setDescription] = useState(capa.description || '');
+  const [rootCause, setRootCause] = useState(capa.root_cause || '');
+  const [correctiveAction, setCorrectiveAction] = useState(capa.corrective_action || '');
+  const [assignedTo, setAssignedTo] = useState(capa.assigned_to || '');
+  const [dueDate, setDueDate] = useState(capa.due_date || '');
+  const [status, setStatus] = useState(capa.status || 'Open');
+  const [why1, setWhy1] = useState(capa.why_1 || '');
+  const [why2, setWhy2] = useState(capa.why_2 || '');
+  const [why3, setWhy3] = useState(capa.why_3 || '');
+  const [why4, setWhy4] = useState(capa.why_4 || '');
+  const [why5, setWhy5] = useState(capa.why_5 || '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setTitle(capa.title || '');
-    setDescription(capa.description || '');
-    setRootCause(capa.root_cause || '');
-    setCorrectiveAction(capa.corrective_action || '');
-    setAssignedTo(capa.assigned_to || '');
-    setDueDate(capa.due_date || '');
-    setStatus(capa.status || 'Open');
-    setWhy1(capa.why_1 || '');
-    setWhy2(capa.why_2 || '');
-    setWhy3(capa.why_3 || '');
-    setWhy4(capa.why_4 || '');
-    setWhy5(capa.why_5 || '');
-  }, [capa]);
 
   const handleWhyChange = (field: string, val: string) => {
     if (field === 'why_1') setWhy1(val);
@@ -207,7 +192,7 @@ export default function CAPADetailDrawer({ capa, onClose }: CAPADetailDrawerProp
                 </label>
                 <select
                   value={status}
-                  onChange={(e) => setStatus(e.target.value)}
+                  onChange={(e) => setStatus(e.target.value as any)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 >
                   <option value="Open">Open</option>

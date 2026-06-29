@@ -4,8 +4,6 @@
 
 import React from 'react';
 import { getAudits } from '@/lib/data/queries';
-import AuditCard from '@/components/audits/AuditCard';
-import { ClipboardCheck } from 'lucide-react';
 import AuditListClient from '@/components/audits/AuditListClient';
 
 export const dynamic = 'force-dynamic';

@@ -147,7 +147,7 @@ export default function CreateAuditModal({ onClose }: CreateAuditModalProps) {
                   onChange={(e) => handleClauseChange(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 >
-                  {Object.entries(ISO_9001_2015_MASTER).flatMap(([k, section]) =>
+                  {Object.values(ISO_9001_2015_MASTER).flatMap((section) =>
                     Object.values(section.subclauses).map((sub) => (
                       <option key={sub.id} value={sub.id}>
                         Clause {sub.id} — {sub.title}

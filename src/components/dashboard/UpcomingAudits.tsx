@@ -11,6 +11,8 @@ import Badge, { statusToVariant } from '@/components/ui/Badge';
 import { Calendar, ArrowRight } from 'lucide-react';
 import type { Audit } from '@/lib/types';
 
+import Link from 'next/link';
+
 interface UpcomingAuditsProps {
   audits: Audit[];
 }
@@ -45,9 +47,9 @@ export default function UpcomingAudits({ audits }: UpcomingAuditsProps) {
             <p className="text-[11px] text-slate-500 mt-0.5 font-medium">Next scheduled internal assessments</p>
           </div>
         </div>
-        <button className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+        <Link href="/audits" className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer">
           View all <ArrowRight className="w-3 h-3" />
-        </button>
+        </Link>
       </div>
 
       {/* Cards Stack */}

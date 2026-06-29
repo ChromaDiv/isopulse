@@ -22,7 +22,6 @@ export default function AuditTrendChart({ data }: AuditTrendChartProps) {
   const chartPadding = { top: 20, right: 16, bottom: 40, left: 40 };
   const barGap = 12;
 
-  const availableWidth = 100; // percentage
   const barCount = data.length;
 
   // Calculate bar positions

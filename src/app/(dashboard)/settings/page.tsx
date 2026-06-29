@@ -4,7 +4,6 @@
 
 import React from 'react';
 import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import { isSupabaseConfigured } from '@/lib/mock-db-helper';
 import {
   Settings as SettingsIcon,
@@ -13,7 +12,6 @@ import {
   Bell,
   Sliders,
   ShieldCheck,
-  Save,
   CheckCircle,
 } from 'lucide-react';
 

@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { RiskRegisterEntry, ISOClause } from '@/lib/types';
 import { X, Save, AlertTriangle } from 'lucide-react';
 import { createRisk, updateRisk } from '@/lib/actions/risk-actions';
@@ -17,27 +17,15 @@ interface RiskFormModalProps {
 }
 
 export default function RiskFormModal({ risk, onClose }: RiskFormModalProps) {
-  const [description, setDescription] = useState('');
-  const [clause, setClause] = useState<ISOClause>('6.1');
-  const [likelihood, setLikelihood] = useState<number>(3);
-  const [impact, setImpact] = useState<number>(3);
-  const [mitigationPlan, setMitigationPlan] = useState('');
-  const [owner, setOwner] = useState('');
-  const [status, setStatus] = useState<'Active' | 'Mitigated' | 'Accepted'>('Active');
+  const [description, setDescription] = useState(risk?.description || '');
+  const [clause, setClause] = useState<ISOClause>(risk?.clause || '6.1');
+  const [likelihood, setLikelihood] = useState<number>(risk?.likelihood || 3);
+  const [impact, setImpact] = useState<number>(risk?.impact || 3);
+  const [mitigationPlan, setMitigationPlan] = useState(risk?.mitigation_plan || '');
+  const [owner, setOwner] = useState(risk?.owner || '');
+  const [status, setStatus] = useState<'Active' | 'Mitigated' | 'Accepted'>(risk?.status || 'Active');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (risk) {
-      setDescription(risk.description || '');
-      setClause(risk.clause || '6.1');
-      setLikelihood(risk.likelihood || 3);
-      setImpact(risk.impact || 3);
-      setMitigationPlan(risk.mitigation_plan || '');
-      setOwner(risk.owner || '');
-      setStatus(risk.status || 'Active');
-    }
-  }, [risk]);
 
   const score = likelihood * impact;
 
@@ -133,7 +121,7 @@ export default function RiskFormModal({ risk, onClose }: RiskFormModalProps) {
                   onChange={(e) => setClause(e.target.value as ISOClause)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
                 >
-                  {Object.entries(ISO_CLAUSES).flatMap(([k, section]) =>
+                  {Object.values(ISO_CLAUSES).flatMap((section) =>
                     Object.keys(section.subclauses).map((subKey) => (
                       <option key={subKey} value={subKey}>
                         Clause {subKey} ({section.title.split(' ')[0]})

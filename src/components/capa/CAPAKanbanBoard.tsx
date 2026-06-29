@@ -10,7 +10,7 @@ import type { CAPAAction, CAPAStatus } from '@/lib/types';
 import CAPACard from './CAPACard';
 import CAPADetailDrawer from './CAPADetailDrawer';
 import CreateCAPAModal from './CreateCAPAModal';
-import { Plus, ShieldAlert, KanbanSquare, RefreshCw } from 'lucide-react';
+import { Plus, ShieldAlert, KanbanSquare } from 'lucide-react';
 import { updateCAPAStatus } from '@/lib/actions/capa-actions';
 
 interface CAPAKanbanBoardProps {
@@ -170,6 +170,7 @@ export default function CAPAKanbanBoard({ initialCapas }: CAPAKanbanBoardProps) 
       {/* Slide-out Drawer */}
       {selectedCapa && (
         <CAPADetailDrawer
+          key={selectedCapa.id}
           capa={selectedCapa}
           onClose={() => setSelectedCapa(null)}
         />

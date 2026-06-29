@@ -5,8 +5,8 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { ClauseImplementation } from '@/lib/types';
 import ClauseAccordion from './ClauseAccordion';
 import ClauseDetailPane from './ClauseDetailPane';
@@ -15,9 +15,11 @@ interface ClauseMatrixClientProps {
   initialImplementations: ClauseImplementation[];
 }
 
-export default function ClauseMatrixClient({ initialImplementations }: ClauseMatrixClientProps) {
-  const [selectedSubclauseId, setSelectedSubclauseId] = useState<string | null>(null);
+function ClauseMatrixClientContent({ initialImplementations }: ClauseMatrixClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryClause = searchParams.get('clause');
+  const [selectedSubclauseId, setSelectedSubclauseId] = useState<string | null>(queryClause);
 
   // Find implementation record for selected sub-clause
   const currentImplementation = selectedSubclauseId
@@ -67,6 +69,7 @@ export default function ClauseMatrixClient({ initialImplementations }: ClauseMat
           <h2 className="text-base font-semibold text-slate-900">Clause Details & Evidence</h2>
         </div>
         <ClauseDetailPane
+          key={selectedSubclauseId || 'empty'}
           subclauseId={selectedSubclauseId}
           initialImplementation={currentImplementation}
           onSaveSuccess={handleSaveSuccess}
@@ -92,6 +95,7 @@ export default function ClauseMatrixClient({ initialImplementations }: ClauseMat
             
             <div className="p-5 overflow-y-auto">
               <ClauseDetailPane
+                key={selectedSubclauseId || 'empty'}
                 subclauseId={selectedSubclauseId}
                 initialImplementation={currentImplementation}
                 onSaveSuccess={() => {
@@ -104,5 +108,19 @@ export default function ClauseMatrixClient({ initialImplementations }: ClauseMat
         </div>
       )}
     </div>
+  );
+}
+
+export default function ClauseMatrixClient(props: ClauseMatrixClientProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="w-6 h-6 border-2 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <ClauseMatrixClientContent {...props} />
+    </Suspense>
   );
 }

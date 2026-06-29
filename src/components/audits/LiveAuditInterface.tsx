@@ -8,8 +8,9 @@
 import React, { useState, useTransition } from 'react';
 import type { Audit, AuditItem } from '@/lib/types';
 import Badge, { statusToVariant } from '@/components/ui/Badge';
-import { ChevronLeft, Check, ClipboardCheck, MessageSquare, ShieldAlert, CheckCircle, Percent } from 'lucide-react';
+import { ChevronLeft, Check, MessageSquare, ShieldAlert, CheckCircle, Percent, ChevronDown, BookOpen, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { getSubClauseById } from '@/lib/iso9001Data';
 import { updateAuditItemStatus, updateAuditItemEvidence } from '@/lib/actions/audit-item-actions';
 import { updateAuditStatus } from '@/lib/actions/audit-actions';
 import EvidenceUploader from './EvidenceUploader';
@@ -28,6 +29,7 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
   const [isPending, startTransition] = useTransition();
   const [activeQuestionIdx, setActiveQuestionIdx] = useState<number>(0);
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
+  const [showGuidance, setShowGuidance] = useState(false);
 
   const totalQuestions = items.length;
   const completedQuestions = items.filter((item) => item.status !== 'Pending').length;
@@ -135,6 +137,53 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
           </div>
         </div>
       </div>
+
+      {/* ISO 9001 Guidance Panel */}
+      {(() => {
+        const subclauseInfo = getSubClauseById(audit.clause_targeted);
+        if (!subclauseInfo) return null;
+        return (
+          <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-xs animate-fade-in">
+            <button
+              type="button"
+              onClick={() => setShowGuidance(!showGuidance)}
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50/50 transition-colors cursor-pointer text-xs font-bold text-slate-700"
+            >
+              <span className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-indigo-500" />
+                ISO 9001 Reference & Guidance — Clause {audit.clause_targeted}
+              </span>
+              <ChevronDown className={`w-4.5 h-4.5 text-slate-400 transition-transform ${showGuidance ? 'rotate-180' : ''}`} />
+            </button>
+            {showGuidance && (
+              <div className="px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/10 space-y-4 text-xs">
+                <div className="space-y-1.5">
+                  <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wider block">Official Requirements Context</span>
+                  <p className="text-slate-700 leading-relaxed font-serif text-[11px] whitespace-pre-line antialiased">
+                    {subclauseInfo.fullRequirements}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100/60">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mr-1">Target Departments:</span>
+                  {subclauseInfo.departments.map((d) => (
+                    <span key={d} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200/40">
+                      {d}
+                    </span>
+                  ))}
+                  <Link
+                    href={`/help?clause=${subclauseInfo.id}`}
+                    target="_blank"
+                    className="ml-auto text-[10px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1"
+                  >
+                    Open Reference Manual
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Main Execution Engine (Mobile/Tablet Responsive Layout) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

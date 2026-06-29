@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { uploadEvidence } from '@/lib/actions/audit-item-actions';
 
 interface EvidenceUploaderProps {
@@ -49,7 +49,7 @@ export default function EvidenceUploader({
         onUploadSuccess(res.url);
         setUploading(false);
       }
-    } catch (err: any) {
+    } catch {
       simulateLocalUpload(file);
     }
   };
