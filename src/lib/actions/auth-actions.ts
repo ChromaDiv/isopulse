@@ -7,10 +7,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { isSupabaseConfigured } from '@/lib/mock-db-helper';
 
 export async function signIn(formData: FormData) {
-  const supabase = await createClient();
-
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -18,18 +17,26 @@ export async function signIn(formData: FormData) {
     return { error: 'Email and password are required.' };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (!isSupabaseConfigured()) {
+    // In mock mode, permit immediate login
+    redirect('/');
+  }
 
-  if (error) {
-    return { error: error.message };
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      return { error: error.message };
+    }
+  } catch (err: any) {
+    return { error: err.message || 'Authentication service is currently unavailable.' };
   }
 
   redirect('/');
 }
 
 export async function signUp(formData: FormData) {
-  const supabase = await createClient();
-
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -47,26 +54,43 @@ export async function signUp(formData: FormData) {
     return { error: 'Password must be at least 6 characters.' };
   }
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: name },
-    },
-  });
-
-  if (error) {
-    return { error: error.message };
+  if (!isSupabaseConfigured()) {
+    return { 
+      success: 'Account created! (Local mock mode) You can now log in immediately.' 
+    };
   }
 
-  return { 
-    success: 'Account created! You can now log in immediately. If you have "Confirm email" enabled in your Supabase Dashboard, please check your inbox for the confirmation link.' 
-  };
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { 
+      success: 'Account created! You can now log in immediately. If you have "Confirm email" enabled in your Supabase Dashboard, please check your inbox for the confirmation link.' 
+    };
+  } catch (err: any) {
+    return { error: err.message || 'Registration service is currently unavailable.' };
+  }
 }
 
 export async function signOut() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = await createClient();
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('Supabase signOut failed, proceeding with manual cookie clearing:', err);
+    }
+  }
 
   // Bulletproof cookie clearing for Vercel / Production environments
   try {
