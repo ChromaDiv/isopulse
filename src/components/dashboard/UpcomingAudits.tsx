@@ -1,6 +1,6 @@
 // ============================================================
 // IsoPulse — UpcomingAudits Component
-// Table of next scheduled internal audits
+// Beautiful card containers of next scheduled internal audits
 // ============================================================
 
 'use client';
@@ -33,124 +33,90 @@ function getDaysUntil(dateStr: string): number {
 
 export default function UpcomingAudits({ audits }: UpcomingAuditsProps) {
   return (
-    <Card padding="none" className="animate-fade-in">
-      <div className="flex items-center justify-between px-5 pt-5 pb-4 sm:px-6 sm:pt-6">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50">
-            <Calendar className="w-4 h-4 text-indigo-600" />
+    <Card padding="none" className="animate-fade-in flex flex-col h-full bg-white border border-slate-200/80 rounded-xl shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-8.5 h-8.5 rounded-lg bg-indigo-50 text-indigo-600">
+            <Calendar className="w-4.5 h-4.5" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Upcoming Audits</h3>
-            <p className="text-xs text-slate-500">Next scheduled internal audits</p>
+            <h3 className="text-sm font-bold text-slate-900 leading-tight">Upcoming Audits</h3>
+            <p className="text-[11px] text-slate-500 mt-0.5 font-medium">Next scheduled internal assessments</p>
           </div>
         </div>
-        <button className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        <button className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
           View all <ArrowRight className="w-3 h-3" />
         </button>
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-t border-slate-100">
-              <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Audit
-              </th>
-              <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Department
-              </th>
-              <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Auditor
-              </th>
-              <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {audits.map((audit, index) => {
-              const daysUntil = getDaysUntil(audit.scheduled_date);
-              return (
-                <tr
-                  key={audit.id}
-                  className="hover:bg-slate-50/60 transition-colors duration-150 animate-fade-in"
-                  style={{ animationDelay: `${index * 60}ms` }}
-                >
-                  <td className="px-6 py-3.5 min-w-[220px]">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800 leading-normal">{audit.title}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">Clause {audit.clause_targeted}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3.5 whitespace-nowrap">
-                    <span className="text-sm text-slate-600">{audit.department}</span>
-                  </td>
-                  <td className="px-6 py-3.5 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+      {/* Cards Stack */}
+      <div className="p-5 space-y-4 overflow-y-auto flex-1 max-h-[460px]">
+        {audits.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center opacity-40">
+            <Calendar className="w-8 h-8 text-slate-400 mb-2" />
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">No Audits Scheduled</p>
+          </div>
+        ) : (
+          audits.map((audit, index) => {
+            const daysUntil = getDaysUntil(audit.scheduled_date);
+            return (
+              <div
+                key={audit.id}
+                className="group border border-slate-100 hover:border-indigo-100 hover:shadow-xs rounded-xl p-4 bg-slate-50/20 hover:bg-indigo-50/5 transition-all duration-200 animate-fade-in"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                {/* Header info */}
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <span className="inline-flex px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100/50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                    Clause {audit.clause_targeted}
+                  </span>
+                  <Badge variant={statusToVariant(audit.status)} dot>
+                    {audit.status}
+                  </Badge>
+                </div>
+
+                {/* Audit Title */}
+                <h4 className="font-bold text-slate-900 text-sm leading-snug group-hover:text-indigo-900 transition-colors">
+                  {audit.title}
+                </h4>
+
+                {/* Grid details */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-3.5 pt-3 border-t border-slate-100/80 text-xs text-slate-500">
+                  {/* Department */}
+                  <div className="space-y-0.5">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Department</span>
+                    <span className="font-semibold text-slate-700">{audit.department}</span>
+                  </div>
+
+                  {/* Auditor */}
+                  <div className="space-y-0.5">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Auditor</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">
                         {audit.auditor_name?.split(' ').map(n => n[0]).join('')}
                       </div>
-                      <span className="text-sm text-slate-600">{audit.auditor_name}</span>
+                      <span className="font-medium text-slate-700 truncate">{audit.auditor_name}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-3.5 whitespace-nowrap">
-                    <div>
-                      <p className="text-sm text-slate-600 font-medium">{formatDate(audit.scheduled_date)}</p>
+                  </div>
+
+                  {/* Date */}
+                  <div className="space-y-0.5">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Schedule Date</span>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <span className="font-medium text-slate-700">{formatDate(audit.scheduled_date)}</span>
                       {daysUntil > 0 && (
-                        <p className="text-[10px] text-slate-400 mt-0.5">
-                          In {daysUntil} day{daysUntil !== 1 ? 's' : ''}
-                        </p>
+                        <span className="text-[10px] text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded-md font-bold ml-1.5 flex-shrink-0">
+                          In {daysUntil}d
+                        </span>
                       )}
                     </div>
-                  </td>
-                  <td className="px-6 py-3.5 whitespace-nowrap">
-                    <Badge variant={statusToVariant(audit.status)} dot>
-                      {audit.status}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="sm:hidden divide-y divide-slate-100 border-t border-slate-100">
-        {audits.map((audit, index) => {
-          const daysUntil = getDaysUntil(audit.scheduled_date);
-          return (
-            <div
-              key={audit.id}
-              className="px-5 py-3.5 animate-fade-in"
-              style={{ animationDelay: `${index * 60}ms` }}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">{audit.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {audit.department} · Clause {audit.clause_targeted}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-xs text-slate-400">{formatDate(audit.scheduled_date)}</span>
-                    {daysUntil > 0 && (
-                      <span className="text-[10px] text-slate-300">
-                        ({daysUntil}d)
-                      </span>
-                    )}
                   </div>
                 </div>
-                <Badge variant={statusToVariant(audit.status)} dot>
-                  {audit.status}
-                </Badge>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </Card>
   );
