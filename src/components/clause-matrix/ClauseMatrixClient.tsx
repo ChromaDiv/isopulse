@@ -61,8 +61,8 @@ export default function ClauseMatrixClient({ initialImplementations }: ClauseMat
         </div>
       </div>
 
-      {/* Detail & Evidence Log Pane (Right) */}
-      <div className="lg:col-span-5 lg:sticky lg:top-6">
+      {/* Detail & Evidence Log Pane (Right) - Desktop/Tablet Landscape View */}
+      <div className="hidden lg:block lg:col-span-5 lg:sticky lg:top-6">
         <div className="pb-2">
           <h2 className="text-base font-semibold text-slate-900">Clause Details & Evidence</h2>
         </div>
@@ -72,6 +72,37 @@ export default function ClauseMatrixClient({ initialImplementations }: ClauseMat
           onSaveSuccess={handleSaveSuccess}
         />
       </div>
+
+      {/* Mobile/Tablet Portrait Detail View - Drawer Overlay */}
+      {selectedSubclauseId && (
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+          {/* Backdrop click close */}
+          <div className="absolute inset-0 -z-10" onClick={() => setSelectedSubclauseId(null)} />
+          
+          <div className="bg-white rounded-t-2xl shadow-xl max-h-[85vh] overflow-y-auto flex flex-col transform transition-transform duration-300 animate-slide-up">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 flex-shrink-0">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Clause Details & Evidence</h3>
+              <button
+                onClick={() => setSelectedSubclauseId(null)}
+                className="text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="p-5 overflow-y-auto">
+              <ClauseDetailPane
+                subclauseId={selectedSubclauseId}
+                initialImplementation={currentImplementation}
+                onSaveSuccess={() => {
+                  handleSaveSuccess();
+                  setSelectedSubclauseId(null); // Close drawer after save on mobile for cleaner UX
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

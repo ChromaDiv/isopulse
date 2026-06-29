@@ -27,6 +27,7 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
   );
   const [isPending, startTransition] = useTransition();
   const [activeQuestionIdx, setActiveQuestionIdx] = useState<number>(0);
+  const [isMobileListOpen, setIsMobileListOpen] = useState(false);
 
   const totalQuestions = items.length;
   const completedQuestions = items.filter((item) => item.status !== 'Pending').length;
@@ -135,10 +136,10 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
         </div>
       </div>
 
-      {/* Main Execution Engine (Mobile First) */}
+      {/* Main Execution Engine (Mobile/Tablet Responsive Layout) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Navigation Sidebar List */}
-        <div className="md:col-span-1 space-y-2">
+        {/* Navigation Sidebar List - Hidden on mobile, visible on desktop */}
+        <div className="hidden md:block md:col-span-1 space-y-2">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Checklist Items</h3>
           <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
             {items.map((item, idx) => {
@@ -179,8 +180,17 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
           <Card className="flex flex-col h-full min-h-[350px]">
             {/* Card Question Header */}
             <div className="border-b border-slate-100 pb-4 mb-4">
-              <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">
-                <span>Assessment Area {activeQuestionIdx + 1} of {totalQuestions}</span>
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                  <span>Assessment Area {activeQuestionIdx + 1} of {totalQuestions}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileListOpen(true)}
+                  className="md:hidden text-[10px] font-bold text-indigo-700 bg-indigo-55/10 border border-indigo-100/50 px-2 py-0.5 rounded-md hover:bg-indigo-100/50 transition-colors"
+                >
+                  View Checklist
+                </button>
               </div>
               <h3 className="font-semibold text-slate-800 text-sm leading-relaxed">
                 {currentItem.question}
@@ -284,6 +294,62 @@ export default function LiveAuditInterface({ audit, initialItems }: LiveAuditInt
           </Card>
         </div>
       </div>
+
+      {/* Mobile Checklist Drawer Overlay */}
+      {isMobileListOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+          {/* Backdrop */}
+          <div className="absolute inset-0 -z-10" onClick={() => setIsMobileListOpen(false)} />
+          
+          <div className="bg-white rounded-t-2xl shadow-xl max-h-[75vh] overflow-y-auto flex flex-col transform transition-transform duration-300 animate-slide-up">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 flex-shrink-0">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Checklist Items</h3>
+              <button
+                onClick={() => setIsMobileListOpen(false)}
+                className="text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="p-5 space-y-2 overflow-y-auto">
+              {items.map((item, idx) => {
+                const isActive = idx === activeQuestionIdx;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveQuestionIdx(idx);
+                      setIsMobileListOpen(false);
+                    }}
+                    className={`w-full text-left p-3 rounded-lg border text-xs transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-indigo-50/50 border-indigo-200 text-indigo-900 font-semibold shadow-sm'
+                        : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50/50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 leading-relaxed">{item.question}</p>
+                        {item.status !== 'Pending' && (
+                          <span className="mt-1.5 inline-block">
+                            <Badge variant={statusToVariant(item.status)} className="text-[9px] px-1.5 py-0">
+                              {item.status}
+                            </Badge>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Completion CTA */}
       {completedQuestions === totalQuestions && audit.status !== 'Completed' && (
