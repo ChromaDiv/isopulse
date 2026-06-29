@@ -63,14 +63,16 @@ export default function AppShell({ children }: AppShellProps) {
       >
         <div className="relative h-full">
           <Sidebar onClose={closeMenu} />
-          {/* Close button */}
-          <button
-            onClick={closeMenu}
-            className="absolute top-4 right-[-44px] flex items-center justify-center w-9 h-9 rounded-full bg-white/90 shadow-lg text-slate-600 hover:text-slate-900 transition-colors"
-            aria-label="Close menu"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {/* Close button - Only visible when menu is open */}
+          {mobileMenuOpen && (
+            <button
+              onClick={closeMenu}
+              className="absolute top-4 right-[-44px] flex items-center justify-center w-9 h-9 rounded-full bg-white/90 shadow-lg text-slate-600 hover:text-slate-900 transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
